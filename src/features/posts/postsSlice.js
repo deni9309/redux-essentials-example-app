@@ -1,9 +1,5 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
-
-const initialState = [
-    { id: '1', title: 'First Post!', content: 'Hello Redux!', user: '2' },
-    { id: '2', title: 'Second Post', content: 'Hello from ReactJS', user: '1' }
-];
+import { seedPostsData } from "../../utils/seedData";
 
 /* Reducer functions must always create new state values immutably, by making copies! 
  It's safe to call mutating functions like Array.push() 
@@ -14,7 +10,7 @@ const initialState = [
 
 const postsSlice = createSlice({
     name: 'posts',
-    initialState,
+    initialState: seedPostsData,
     reducers: {
         postAdded: {
             reducer(state, action) {
@@ -24,22 +20,29 @@ const postsSlice = createSlice({
                 return {
                     payload: {
                         id: nanoid(),
+                        date: new Date().toISOString(),
                         title,
                         content,
                         user: userId,
+                        reactions: {
+                            thumbsUp: 0,
+                            hooray: 0,
+                            heart: 0,
+                            rocket: 0,
+                            eyes: 0
+                        }
                     }
                 };
             },
         },
         postUpdated(state, action) {
-            const { id, title, content, user } = action.payload;
+            const { id, title, content } = action.payload;
 
             const existingPost = state.find(p => p.id === id);
 
             if (existingPost) {
                 existingPost.title = title;
                 existingPost.content = content;
-                existingPost.user = user
             }
         },
     },

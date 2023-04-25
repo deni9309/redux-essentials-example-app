@@ -8,52 +8,43 @@ export const EditPostForm = ({ match }) => {
     const { postId } = match.params;
 
     const post = useSelector(state => state.posts.find(p => p.id === postId));
-    const users = useSelector(state => state.users);
+    const postAuthor = useSelector(state => state.users.find(u => u.id === post.user).name);
 
     const [title, setTitle] = useState(post.title);
     const [content, setContent] = useState(post.content);
-    const [userId, setUserId] = useState(post.user);
 
     const dispatch = useDispatch();
     const history = useHistory();
 
     const onTitleChanged = (e) => setTitle(e.target.value);
     const onContentChanged = (e) => setContent(e.target.value);
-    const onAuthorChanged = (e) => setUserId(e.target.value);
 
     const onSavePostClicked = () => {
-        if (title && content && userId) {
-            dispatch(postUpdated({ id: postId, title, content, user: userId }));
+        if (title && content) {
+            dispatch(postUpdated({ id: postId, title, content }));
 
             history.push(`/posts/${postId}`);
         }
     };
 
-    const canUpdate = Boolean(title) && Boolean(content) && Boolean(userId);
-
-    const usersOptions = users.map(u => (
-        <option key={u.id} value={u.id}>
-            {u.name}
-        </option>
-    ));
+    const canUpdate = Boolean(title) && Boolean(content);
 
     return (
         <section>
-            <h2>Edit Your Post</h2>
+            <h2 className="no-margin-bottom">Edit Post</h2>
+            <hr />
+            <cite>by {postAuthor}</cite>
             <form>
-                <label htmlFor="postTitle">Post Title:</label>
-                <input
-                    type="text"
-                    id="postTitle"
-                    name="postTitle"
-                    value={title}
-                    onChange={onTitleChanged}
-                />
-
-                <label htmlFor="postAuthor">Author:</label>
-                <select id="postAuthor" value={userId} onChange={onAuthorChanged}>
-                    {usersOptions}
-                </select>
+                <div className="mark">
+                    <label htmlFor="postTitle">Post Title:</label>
+                    <input
+                        type="text"
+                        id="postTitle"
+                        name="postTitle"
+                        value={title}
+                        onChange={onTitleChanged}
+                    />
+                </div>
 
                 <label htmlFor="postContent">Content:</label>
                 <input

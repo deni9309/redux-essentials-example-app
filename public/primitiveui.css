@@ -811,6 +811,15 @@ button:active,
   text-decoration: none;
 }
 
+button:disabled,
+a:disabled,
+.button:disabled,
+[type='submit']:disabled,
+[type='reset']:disabled,
+[type='button']:disabled {
+  cursor: not-allowed;
+}
+
 .button::-moz-focus-inner,
 a.button::-moz-focus-inner,
 button::-moz-focus-inner,
