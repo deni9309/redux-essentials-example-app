@@ -1,8 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const initialState = [
-    { id: '1', title: 'First Post!', content: 'Hello Redux!' },
-    { id: '2', title: 'Second Post', content: 'Hello from ReactJS' }
+    { id: '1', title: 'First Post!', content: 'Hello Redux!', user: '2' },
+    { id: '2', title: 'Second Post', content: 'Hello from ReactJS', user: '1' }
 ];
 
 /* Reducer functions must always create new state values immutably, by making copies! 
@@ -16,12 +16,35 @@ const postsSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
-        postAdded(state, action) {
-            state.push(action.payload);
+        postAdded: {
+            reducer(state, action) {
+                state.push(action.payload); // safe to use because of Immer
+            },
+            prepare(title, content, userId) {
+                return {
+                    payload: {
+                        id: nanoid(),
+                        title,
+                        content,
+                        user: userId,
+                    }
+                };
+            },
+        },
+        postUpdated(state, action) {
+            const { id, title, content, user } = action.payload;
+
+            const existingPost = state.find(p => p.id === id);
+
+            if (existingPost) {
+                existingPost.title = title;
+                existingPost.content = content;
+                existingPost.user = user
+            }
         },
     },
 });
 
-export const { postAdded } = postsSlice.actions;
+export const { postAdded, postUpdated } = postsSlice.actions;
 
 export default postsSlice.reducer;

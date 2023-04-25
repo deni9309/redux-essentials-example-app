@@ -1,32 +1,35 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from 'react-router-dom';
 
-import { postAdded } from "./postsSlice";
+import { postUpdated } from "./postsSlice";
 
-export const AddPostForm = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [userId, setUserId] = useState('');
+export const EditPostForm = ({ match }) => {
+    const { postId } = match.params;
+
+    const post = useSelector(state => state.posts.find(p => p.id === postId));
+    const users = useSelector(state => state.users);
+
+    const [title, setTitle] = useState(post.title);
+    const [content, setContent] = useState(post.content);
+    const [userId, setUserId] = useState(post.user);
 
     const dispatch = useDispatch();
-
-    const users = useSelector(state => state.users);
+    const history = useHistory();
 
     const onTitleChanged = (e) => setTitle(e.target.value);
     const onContentChanged = (e) => setContent(e.target.value);
     const onAuthorChanged = (e) => setUserId(e.target.value);
 
-    const onPublishPostClicked = () => {
+    const onSavePostClicked = () => {
         if (title && content && userId) {
-            dispatch(postAdded(title, content, userId));
+            dispatch(postUpdated({ id: postId, title, content, user: userId }));
 
-            setTitle('');
-            setContent('');
-            setUserId('');
+            history.push(`/posts/${postId}`);
         }
     };
 
-    const canPublish = Boolean(title) && Boolean(content) && Boolean(userId);
+    const canUpdate = Boolean(title) && Boolean(content) && Boolean(userId);
 
     const usersOptions = users.map(u => (
         <option key={u.id} value={u.id}>
@@ -36,7 +39,7 @@ export const AddPostForm = () => {
 
     return (
         <section>
-            <h2>Add a New Post</h2>
+            <h2>Edit Your Post</h2>
             <form>
                 <label htmlFor="postTitle">Post Title:</label>
                 <input
@@ -49,7 +52,6 @@ export const AddPostForm = () => {
 
                 <label htmlFor="postAuthor">Author:</label>
                 <select id="postAuthor" value={userId} onChange={onAuthorChanged}>
-                    <option value={ undefined}>--Select an author--</option>
                     {usersOptions}
                 </select>
 
@@ -62,8 +64,8 @@ export const AddPostForm = () => {
                     onChange={onContentChanged}
                 />
 
-                <button type="button" onClick={onPublishPostClicked} disabled={!canPublish}>
-                    Publish Post
+                <button type="button" onClick={onSavePostClicked} disabled={!canUpdate}>
+                    Save Post
                 </button>
             </form>
         </section>
