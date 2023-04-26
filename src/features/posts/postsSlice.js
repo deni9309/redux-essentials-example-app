@@ -12,6 +12,14 @@ const postsSlice = createSlice({
     name: 'posts',
     initialState: seedPostsData,
     reducers: {
+        reactionAdded(state, action) {
+            const { postId, reaction } = action.payload;
+            const existingPost = state.find(p => p.id === postId);
+
+            if (existingPost) {
+                existingPost.reactions[reaction]++; // not mutating (using Immer)
+            }
+        },
         postAdded: {
             reducer(state, action) {
                 state.push(action.payload); // safe to use because of Immer
@@ -48,6 +56,6 @@ const postsSlice = createSlice({
     },
 });
 
-export const { postAdded, postUpdated } = postsSlice.actions;
+export const { reactionAdded, postAdded, postUpdated } = postsSlice.actions;
 
 export default postsSlice.reducer;

@@ -134,6 +134,13 @@ small {
   font-size: 80%;
 }
 
+.semi-small-italic{
+  font-size: 90%;
+  font-style: italic;
+  font-weight: 600;
+  color: #818181;
+}
+
 /**
    * Prevent `sub` and `sup` elements from affecting the line height in
    * all browsers.
@@ -972,6 +979,7 @@ textarea:active {
 textarea {
   overflow: auto;
   height: auto;
+  resize: vertical;
 }
 
 fieldset {

@@ -7,7 +7,7 @@ export const TimeAgo = ({
    
     return (
         <span title={timestamp}>
-            &nbsp; <i>{getDistanceToNow(timestamp)}</i>
+            &nbsp;<i className="semi-small-italic">{getDistanceToNow(timestamp)}</i>
         </span>
     );
 };

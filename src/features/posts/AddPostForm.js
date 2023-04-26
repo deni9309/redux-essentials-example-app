@@ -54,13 +54,14 @@ export const AddPostForm = () => {
                 </select>
 
                 <label htmlFor="postContent">Content:</label>
-                <input
+                <textarea
                     type="text"
                     id="postContent"
                     name="postContent"
                     value={content}
                     onChange={onContentChanged}
-                />
+                    rows={5}
+                ></textarea>
 
                 <button type="button" onClick={onPublishPostClicked} disabled={!canPublish}>
                     Publish Post
