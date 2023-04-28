@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from 'react-router-dom';
 
-import { postUpdated } from "./postsSlice";
+import { postUpdated, selectPostById } from "./postsSlice";
+import { selectUserById } from "../users/usersSlice";
 
-export const EditPostForm = ({ match }) => {
+export const EditPostForm = ({
+    match,
+}) => {
     const { postId } = match.params;
 
-    const post = useSelector(state => state.posts.find(p => p.id === postId));
-    const postAuthor = useSelector(state => state.users.find(u => u.id === post.user).name);
+    const post = useSelector(state => selectPostById(state, postId));
+    const postAuthor = useSelector(state => selectUserById(state, post.user));
 
     const [title, setTitle] = useState(post.title);
     const [content, setContent] = useState(post.content);
@@ -33,7 +36,7 @@ export const EditPostForm = ({ match }) => {
         <section>
             <h2 className="no-margin-bottom">Edit Post</h2>
             <hr />
-            <cite>by {postAuthor}</cite>
+            <cite>by {postAuthor?.name || `Unknown author`}</cite>
             <form>
                 <div className="mark">
                     <label htmlFor="postTitle">Post Title:</label>
