@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { postAdded } from "./postsSlice";
+import { addNewPost } from "./postsSlice";
 
 export const AddPostForm = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [userId, setUserId] = useState('');
+    const [addRequestStatus, setAddRequestStatus] = useState('idle');
 
     const dispatch = useDispatch();
 
@@ -16,17 +17,25 @@ export const AddPostForm = () => {
     const onContentChanged = (e) => setContent(e.target.value);
     const onAuthorChanged = (e) => setUserId(e.target.value);
 
-    const onPublishPostClicked = () => {
-        if (title && content && userId) {
-            dispatch(postAdded(title, content, userId));
+    const canPublish =
+        [title, content, userId].every(Boolean) && addRequestStatus === 'idle';
 
-            setTitle('');
-            setContent('');
-            setUserId('');
+    const onPublishPostClicked = async () => {
+        if (canPublish) {
+            try {
+                setAddRequestStatus('pending');
+                await dispatch(addNewPost({ title, content, user: userId })).unwrap();
+
+                setTitle('');
+                setContent('');
+                setUserId('');
+            } catch (err) {
+                console.error('Failed to save the post on server: ', err);
+            } finally {
+                setAddRequestStatus('idle');
+            }
         }
     };
-
-    const canPublish = Boolean(title) && Boolean(content) && Boolean(userId);
 
     const usersOptions = users.map(u => (
         <option key={u.id} value={u.id}>
@@ -49,7 +58,7 @@ export const AddPostForm = () => {
 
                 <label htmlFor="postAuthor">Author:</label>
                 <select id="postAuthor" value={userId} onChange={onAuthorChanged}>
-                    <option value={ undefined}>--Select an author--</option>
+                    <option value={undefined}>--Select an author--</option>
                     {usersOptions}
                 </select>
 

@@ -134,7 +134,7 @@ small {
   font-size: 80%;
 }
 
-.semi-small-italic{
+.semi-small-italic {
   font-size: 90%;
   font-style: italic;
   font-weight: 600;
@@ -759,7 +759,6 @@ dd {
   overflow: hidden;
 }
 
-
 .button,
 a.button,
 button,
@@ -799,7 +798,7 @@ button:hover,
   text-decoration: none;
 }
 
-a.active,
+.active,
 .button:focus,
 .button:active,
 a.button:focus,
