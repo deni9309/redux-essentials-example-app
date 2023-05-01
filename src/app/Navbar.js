@@ -1,20 +1,30 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
-import { fetchNotifications } from '../features/notifications/notificationsSlice';
+import { fetchNotifications, selectAllNotifications } from '../features/notifications/notificationsSlice';
 
 export const Navbar = () => {
     const dispatch = useDispatch();
+
+    const notifications = useSelector(selectAllNotifications);
+    const numberUnreadNotifications = notifications.filter(n => !n.read).length;
 
     const fetchNewNotifications = () => {
         dispatch(fetchNotifications());
     };
 
+    let unreadNotificationsBadge;
+    if (numberUnreadNotifications > 0) {
+        unreadNotificationsBadge = (
+            <span className="badge">{numberUnreadNotifications}</span>
+        );
+    }
+
     return (
         <nav>
-            <section>
-                <h1>REDux Social Feed</h1>
+            <section className='logo'>
+                <h1 className='logo-title'>POST it</h1>
 
                 <div className="navContent">
                     <div className="navLinks">
@@ -27,10 +37,10 @@ export const Navbar = () => {
                         </NavLink>
 
                         <NavLink to="/notifications" className={isActive => isActive ? "active" : ""}>
-                            Notifications
+                            Notifications {unreadNotificationsBadge}
                         </NavLink>
                     </div>
-                    <button className="button" onClick={fetchNewNotifications}>
+                    <button className="navButton" onClick={fetchNewNotifications}>
                         Refresh Notifications
                     </button>
                 </div>
