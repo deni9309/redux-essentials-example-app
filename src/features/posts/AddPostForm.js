@@ -1,39 +1,34 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { addNewPost } from "./postsSlice";
+import { Spinner } from "../../components/Spinner";
 import { selectAllUsers } from "../users/usersSlice";
+import { useAddNewPostMutation } from "../api/apiSlice";
 
 export const AddPostForm = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [userId, setUserId] = useState('');
-    const [addRequestStatus, setAddRequestStatus] = useState('idle');
 
-    const dispatch = useDispatch();
-
+    const [addNewPost, { isLoading }] = useAddNewPostMutation();
     const users = useSelector(selectAllUsers);
 
     const onTitleChanged = (e) => setTitle(e.target.value);
     const onContentChanged = (e) => setContent(e.target.value);
     const onAuthorChanged = (e) => setUserId(e.target.value);
 
-    const canPublish =
-        [title, content, userId].every(Boolean) && addRequestStatus === 'idle';
+    const canPublish = [title, content, userId].every(Boolean) && !isLoading;
 
     const onPublishPostClicked = async () => {
         if (canPublish) {
             try {
-                setAddRequestStatus('pending');
-                await dispatch(addNewPost({ title, content, user: userId })).unwrap();
+                await addNewPost({ title, content, user: userId }).unwrap();
 
                 setTitle('');
                 setContent('');
                 setUserId('');
             } catch (err) {
                 console.error('Failed to save the post on server: ', err);
-            } finally {
-                setAddRequestStatus('idle');
             }
         }
     };
@@ -43,6 +38,8 @@ export const AddPostForm = () => {
             {u.name}
         </option>
     ));
+
+    const spinner = isLoading ? <Spinner size="30px" /> : null;
 
     return (
         <section>
@@ -76,6 +73,7 @@ export const AddPostForm = () => {
                 <button type="button" onClick={onPublishPostClicked} disabled={!canPublish}>
                     Publish Post
                 </button>
+                {spinner}
             </form>
         </section>
     );
