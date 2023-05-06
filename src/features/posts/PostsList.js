@@ -1,39 +1,50 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useMemo } from "react";
 
-import {
-    fetchPosts,
-    selectPostIds,
-} from "./postsSlice";
+import { useGetPostsQuery } from "../api/apiSlice";
 
 import { Spinner } from "../../components/Spinner";
 import { PostExcerpt } from "./PostExcerpt";
 
 export const PostsList = () => {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
-    const orderedPostIds = useSelector(selectPostIds);
+    // const orderedPostIds = useSelector(selectPostIds);
 
-    const postStatus = useSelector(state => state.posts.status);
-    const error = useSelector(state => state.posts.error);
+    // const postStatus = useSelector(state => state.posts.status);
+    // const error = useSelector(state => state.posts.error);
 
-    useEffect(() => {
-        if (postStatus === 'idle') {
-            dispatch(fetchPosts());
-        }
-    }, [postStatus, dispatch]);
+    // useEffect(() => {
+    //     if (postStatus === 'idle') {
+    //         dispatch(fetchPosts());
+    //     }
+    // }, [postStatus, dispatch]);
+
+    const {
+        data: posts = [],
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetPostsQuery();
+
+    const sortedPosts = useMemo(() => {
+        const orderedPosts = posts.slice();
+
+        orderedPosts.sort((a, b) => b.date.localeCompare(a.date));
+
+        return orderedPosts;
+    }, [posts]);
 
     let content;
 
-    if (postStatus === 'loading') {
+    if (isLoading) {
         content = <Spinner text="Loading..." />
-    } else if (postStatus === 'succeeded') {
-        // Sort posts in reverse chronological order by datetime string  
-        content = orderedPostIds.map(postId => (
-            <PostExcerpt key={postId} postId={postId} />
+    } else if (isSuccess) {
+        content = sortedPosts.map(post => (
+            <PostExcerpt key={post.id} post={post} />
         ));
-    } else if (postStatus === 'failed') {
-        content = <div>{error}</div>
+    } else if (isError) {
+        content = <div>{error.toString()}</div>
     }
 
     return (
