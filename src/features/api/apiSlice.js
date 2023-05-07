@@ -7,9 +7,12 @@ export const apiSlice = createApi({
 
     baseQuery: fetchBaseQuery({ baseUrl: '/fakeApi' }),
 
+    tagTypes: ['Post'],
+
     endpoints: builder => ({
-        getPosts: builder.query({   // The `getPosts` endpoint is a "query" operation that returns data
-            query: () => '/posts'    // The URL for the request is '/fakeApi/posts'
+        getPosts: builder.query({     // The `getPosts` endpoint is a "query" operation that returns data
+            query: () => '/posts',    // The URL for the request is '/fakeApi/posts'
+            providesTags: ['Post']
         }),
         getPost: builder.query({
             query: postId => `/posts/${postId}`
@@ -19,7 +22,8 @@ export const apiSlice = createApi({
                 url: '/posts',
                 method: 'POST',
                 body: initialPost
-            })
+            }),
+            invalidatesTags: ['Post']
         }),
     }),
 });
