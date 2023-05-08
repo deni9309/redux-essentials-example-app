@@ -8,7 +8,7 @@ import { apiSlice } from '../features/api/apiSlice';
 export default configureStore({
     reducer: {
         posts: postsReducer,
-        users: usersReducer,
+      //  users: usersReducer,
         notifications: notificationsReducer,
         [apiSlice.reducerPath]: apiSlice.reducer,
     },
